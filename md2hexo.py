@@ -21,14 +21,12 @@ def getInfo(name):
 	md_date = input("date(example: YYYY-MM-DD hh:mm:ss): ")
 	md_cate = input("category: ")
 	md_tags = input("tags(example: [tag1, tag2, ...]): ")
-	md_info = '''
----
-title: {0},
+	md_info = '''---
+title: {0}
 date: {1}
 category: {2}
 tags: {3}
----
-'''.format(md_title if md_title else name, md_date if md_date else timeformatter(), md_cate, md_tags)
+---'''.format(md_title if md_title else name, md_date if md_date else timeformatter(), md_cate, md_tags)
 	return md_info
 
 def logger(verb):
@@ -64,7 +62,7 @@ def handler():
 		logger("Handle file: %s" % md)
 		bak_path = os.path.join(tmp_dir, "{0}{1}".format("~", md))
 		shutil.copyfile(md, bak_path)
-		md_info = getInfo(md)
+		md_info = getInfo(md[:-3])
 		new_f = open(md, "w", encoding="utf-8")
 		new_f.write(md_info)
 		new_f.write("\r\n")
