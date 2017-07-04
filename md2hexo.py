@@ -67,8 +67,12 @@ def handler():
 		new_f.write(md_info)
 		new_f.write("\r\n")
 		old_f = open(bak_path, "r", encoding="utf-8")
+		isPrim = True
 		for lines in old_f:
+			if lines.startswith("#") and isPrim:
+				continue
 			new_f.write(lines)
+			isPrim = False
 
 	logger("All done !")
 	logger("Summary: %s file handled." % str(len(handle_list)))
@@ -76,7 +80,6 @@ def handler():
 def first_run(sure):
 	if not sure:
 		return
-	# 被老板骂了, 5555...
 	# logger("This is a simple tool to format markdown for Hexo.")
 	# logger("Please execute this py under your _post directory for this tool will select the current directory as the default work directory")
 	# logger("Or you can write your _post path in the md2hexo.conf under the curDir")
