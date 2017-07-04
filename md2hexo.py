@@ -16,27 +16,30 @@ A simple tool to format markdown for Hexo
 
 handle_list = []
 
-def getInfo():
-	md_title = input("title? \n")
-	md_date = input("date? example: YYYY-MM-DD hh:mm:ss\n")
-	md_cate = input("category? \n")
-	md_tags = input("tags? example: [tag1, tag2, ...]\n")
+def getInfo(name):
+	md_title = input("title: (last filename default)")
+	md_date = input("date(example: YYYY-MM-DD hh:mm:ss): ")
+	md_cate = input("category: ")
+	md_tags = input("tags(example: [tag1, tag2, ...]): ")
 	md_info = '''
 ---
-title: {0}
+title: {0},
 date: {1}
 category: {2}
 tags: {3}
 ---
-'''.format(md_title, md_date, md_cate, md_tags)
+'''.format(md_title if md_title else name, md_date if md_date else timeformatter(), md_cate, md_tags)
 	return md_info
 
 def logger(verb):
+	curTime = timeformatter()
+	print("[%s] %s" % (curTime, verb))
+	time.sleep(0.1)
+
+def timeformatter():
 	timeFmt = '%Y-%m-%d %H:%M:%S'
 	curTime = datetime.datetime.now().strftime(timeFmt)
-	print("[%s] %s" % (curTime, verb))
-	time.sleep(0.5)
-
+	return curTime
 
 def readTree(path):
 	cf = ConfigParser()
@@ -55,12 +58,13 @@ def handler():
 	cf.read("./md2hexo.conf")
 	post_path = cf.get("main", "_post_path")
 	tmp_dir = os.path.join(post_path if post_path else os.getcwd(), "~tmp")
-	os.mkdir(tmp_dir)
+	if not os.path.exists(tmp_dir):
+		os.mkdir(tmp_dir)
 	for md in handle_list:
 		logger("Handle file: %s" % md)
 		bak_path = os.path.join(tmp_dir, "{0}{1}".format("~", md))
 		shutil.copyfile(md, bak_path)
-		md_info = getInfo()
+		md_info = getInfo(md)
 		new_f = open(md, "w", encoding="utf-8")
 		new_f.write(md_info)
 		new_f.write("\r\n")
@@ -74,12 +78,12 @@ def handler():
 def first_run(sure):
 	if not sure:
 		return
-	logger("This is a simple tool to format markdown for Hexo.")
-	logger("Please execute this py under your _post directory for this tool will select the current directory as the default work directory")
-	logger("Or you can write your _post path in the md2hexo.conf under the curDir")
-	logger("This tool just support Python 3.X.")
-	logger("The instruction above just appear if this is your first run.")
-	# logger("To see the instruction, you can run it with '-h'")
+	# 被老板骂了, 5555...
+	# logger("This is a simple tool to format markdown for Hexo.")
+	# logger("Please execute this py under your _post directory for this tool will select the current directory as the default work directory")
+	# logger("Or you can write your _post path in the md2hexo.conf under the curDir")
+	# logger("This tool just support Python 3.X.")
+	# logger("The instruction above just appear if this is your first run.")
 
 def configer():
 	if os.path.isfile("./md2hexo.conf"):
