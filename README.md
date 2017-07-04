@@ -9,3 +9,5 @@ This is a simple tool to format markdown for Hexo.
 > Or you can write your _post path in the md2hexo.conf under the curDir.
 
 This tool only support **Python 3.X**.
+
+If the original file starts with a h{1,2,3,4,5}, this line will be deleted automaticly.
