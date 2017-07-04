@@ -8,6 +8,8 @@ import datetime
 import threading
 from configparser import ConfigParser
 
+__author__ = "WWW"
+
 '''
 A simple tool to format markdown for Hexo
 '''
@@ -17,15 +19,16 @@ handle_list = []
 def getInfo():
 	md_title = input("title? \n")
 	md_date = input("date? example: YYYY-MM-DD hh:mm:ss\n")
-	md_tags = input("tags? example: [tag1, tag2, ...]\n")
 	md_cate = input("category? \n")
+	md_tags = input("tags? example: [tag1, tag2, ...]\n")
 	md_info = '''
 ---
 title: {0}
 date: {1}
-tags: {2}
+category: {2}
+tags: {3}
 ---
-'''.format(md_title, md_date, md_tags)
+'''.format(md_title, md_date, md_cate, md_tags)
 	return md_info
 
 def logger(verb):
@@ -41,7 +44,7 @@ def readTree(path):
 	depth = cf.getint("main", "Maximum_recursion_depth")
 	for file in os.listdir(path):
 		if depth:
-			if os.path.isdir(file):
+			if os.path.isdir(file) and not file.startswith("~tmp"):
 				depth -= 1
 				readTree(file)
 		if os.path.splitext(file)[1] == ".md":
@@ -60,6 +63,7 @@ def handler():
 		md_info = getInfo()
 		new_f = open(md, "w", encoding="utf-8")
 		new_f.write(md_info)
+		new_f.write("\r\n")
 		old_f = open(bak_path, "r", encoding="utf-8")
 		for lines in old_f:
 			new_f.write(lines)
@@ -71,8 +75,7 @@ def first_run(sure):
 	if not sure:
 		return
 	logger("This is a simple tool to format markdown for Hexo.")
-	logger("Please execute this py under your _post directory for \
-		this tool will select the current directory as the default work directory")
+	logger("Please execute this py under your _post directory for this tool will select the current directory as the default work directory")
 	logger("Or you can write your _post path in the md2hexo.conf under the curDir")
 	logger("This tool just support Python 3.X.")
 	logger("The instruction above just appear if this is your first run.")
@@ -81,12 +84,14 @@ def first_run(sure):
 def configer():
 	if os.path.isfile("./md2hexo.conf"):
 		return False
+	hexo_path = input("Please enter your hexo/source/_post location.[Enter for null]")
 	cf = ConfigParser()
 	cf.add_section("main")
-	cf.set("main", "_post_path", "")
+	cf.set("main", "_post_path", hexo_path)
 	cf.set("main", "Maximum_recursion_depth", "0")
 	with open("./md2hexo.conf", "w") as f:
 		cf.write(f)
+	return True
 
 def main():
 	first_run(configer())
