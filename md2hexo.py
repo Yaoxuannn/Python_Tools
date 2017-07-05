@@ -8,12 +8,6 @@ import datetime
 import threading
 from configparser import ConfigParser
 
-__author__ = "WWW"
-
-'''
-A simple tool to format markdown for Hexo
-'''
-
 handle_list = []
 
 def getInfo(name):
@@ -83,9 +77,9 @@ def handler():
 		isPrim = True
 		for lines in old_f:
 			if lines.startswith("#") and isPrim:
+				isPrim = False
 				continue
 			new_f.write(lines)
-			isPrim = False
 		get_confirm = False
 	while not get_confirm:
 		last_order = input("Delete backup folder ~tmp?(yes/no)\n")
@@ -100,15 +94,6 @@ def handler():
 	logger("All done !")
 	logger("Summary: %s file handled." % str(len(handle_list)))
 
-def first_run(sure):
-	if not sure:
-		return
-	logger("This is a simple tool to format markdown for Hexo.")
-	logger("Please execute this py under your _post directory for this tool will select the current directory as the default work directory")
-	logger("Or you can write your _post path in the md2hexo.conf under the curDir")
-	logger("This tool just support Python 3.X.")
-	logger("The instruction above just appear if this is your first run.")
-
 def configer():
 	if os.path.isfile("./md2hexo.conf"):
 		return False
@@ -122,7 +107,7 @@ def configer():
 	return True
 
 def main():
-	first_run(configer())
+	configer()
 	cf = ConfigParser()
 	cf.read("./md2hexo.conf")
 	post_path = cf.get("main", "_post_path")
