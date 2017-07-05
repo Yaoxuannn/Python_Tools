@@ -43,27 +43,40 @@ def readTree(path):
 	cf = ConfigParser()
 	cf.read("./md2hexo.conf")
 	depth = cf.getint("main", "Maximum_recursion_depth")
-	for file in os.listdir(path):
-		if depth:
-			if os.path.isdir(file) and not file.startswith("~tmp"):
-				depth -= 1
-				readTree(file)
-		if os.path.splitext(file)[1] == ".md":
-			handle_list.append(file)
-
+	try:
+		for file in os.listdir(path):
+			if depth:
+				if os.path.isdir(file) and not file.startswith("~tmp"):
+					depth -= 1
+					readTree(file)
+			if os.path.splitext(file)[1] == ".md":
+				handle_list.append(file)
+	except FileNotFoundError as e:
+		logger("There are some error about your path specified.")
+		logger("Here is the detail of your exception: ")
+		print(e)
+		sys.exit(1)
+	
 def handler():
 	cf = ConfigParser()
 	cf.read("./md2hexo.conf")
 	post_path = cf.get("main", "_post_path")
-	tmp_dir = os.path.join(post_path if post_path else os.getcwd(), "~tmp")
+	work_path = post_path if post_path else os.getcwd()
+	tmp_dir = os.path.join(work_path, "~tmp")
 	if not os.path.exists(tmp_dir):
-		os.mkdir(tmp_dir)
+		try:
+			os.mkdir(tmp_dir)
+		except FileNotFoundError as e:
+			logger("There are some error about your path specified.")
+			logger("Here is the detail of your exception: ")
+			print(e)
+			sys.exit(1)
 	for md in handle_list:
 		logger("Handle file: %s" % md)
-		bak_path = os.path.join(tmp_dir, "{0}{1}".format("~", md))
-		shutil.copyfile(md, bak_path)
+		bak_path = os.path.join(tmp_dir, md)
+		shutil.copyfile(os.path.join(work_path, md), bak_path)
 		md_info = getInfo(md[:-3])
-		new_f = open(md, "w", encoding="utf-8")
+		new_f = open(os.path.join(work_path, md), "w", encoding="utf-8")
 		new_f.write(md_info)
 		new_f.write("\r\n")
 		old_f = open(bak_path, "r", encoding="utf-8")
@@ -73,18 +86,28 @@ def handler():
 				continue
 			new_f.write(lines)
 			isPrim = False
-
+		get_confirm = False
+	while not get_confirm:
+		last_order = input("Delete backup folder ~tmp?(yes/no)\n")
+		if last_order == 'y' or last_order == 'Y':
+			print("You should type exact 'yes' to confirm.\n")
+			get_confirm = False
+		elif last_order == 'yes':
+			shutil.rmtree(tmp_dir)
+			get_confirm = True
+		elif last_order	!= 'yes':
+			get_confirm = True
 	logger("All done !")
 	logger("Summary: %s file handled." % str(len(handle_list)))
 
 def first_run(sure):
 	if not sure:
 		return
-	# logger("This is a simple tool to format markdown for Hexo.")
-	# logger("Please execute this py under your _post directory for this tool will select the current directory as the default work directory")
-	# logger("Or you can write your _post path in the md2hexo.conf under the curDir")
-	# logger("This tool just support Python 3.X.")
-	# logger("The instruction above just appear if this is your first run.")
+	logger("This is a simple tool to format markdown for Hexo.")
+	logger("Please execute this py under your _post directory for this tool will select the current directory as the default work directory")
+	logger("Or you can write your _post path in the md2hexo.conf under the curDir")
+	logger("This tool just support Python 3.X.")
+	logger("The instruction above just appear if this is your first run.")
 
 def configer():
 	if os.path.isfile("./md2hexo.conf"):
@@ -100,9 +123,12 @@ def configer():
 
 def main():
 	first_run(configer())
-	logger("Current directory: %s" % os.getcwd())
+	cf = ConfigParser()
+	cf.read("./md2hexo.conf")
+	post_path = cf.get("main", "_post_path")
+	logger("Current directory: %s" % post_path if post_path else os.getcwd())
 	logger("Reading the file tree...")
-	readingT = threading.Thread(target = readTree, args = (os.getcwd(),))
+	readingT = threading.Thread(target = readTree, args = (post_path if post_path else os.getcwd(),))
 	readingT.start()
 	readingT.join()
 	handler()
