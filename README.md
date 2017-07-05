@@ -10,4 +10,4 @@ This is a simple tool to format markdown for Hexo.
 
 This tool only support **Python 3.X**.
 
-If the original file starts with a h{1,2,3,4,5}, this line will be deleted automaticly.
+**If the original file starts with a h{1,2,3,4,5}, this line will be deleted automaticly.**
