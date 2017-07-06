@@ -20,6 +20,6 @@ This tool only support **Python 3.X**.
 
 It's a awesome tool to help you change a .png to base64.
 
-Help: python base.py [path1 [path2 [path3...]]]
+Help: python base.py [path1 [path2 [path3...]]][-h/--help][all]
 
 **The last base64 string will be pasted automatically.**
