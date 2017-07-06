@@ -15,3 +15,11 @@ This tool only support **Python 3.X**.
 `V0.1 changeLog: Add exception handle.`
 
 `V0.2 changeLog: The empty line above the first title will be ignored.`
+
+## base.py
+
+It's a awesome tool to help you change a .png to base64.
+
+Help: python base.py [path1 [path2 [path3...]]]
+
+**The last base64 string will be pasted automatically.**
