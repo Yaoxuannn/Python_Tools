@@ -1,5 +1,5 @@
 # coding: utf-8
-import difflib
+import filecmp
 import json
 import multiprocessing
 import os
@@ -7,18 +7,12 @@ import shutil
 import sys
 
 CONFIG_PATH = os.path.join(os.getcwd(), "backup.conf")
-POOL_CAPACITY = 0
-pool = None
-SOURCE_DIR = ""
-DEST_DIR = ""
-FILTER = []
 
-default_config = '''
-{
+default_config = '''{
     "processes":"5",
     "source":"",
     "destination":"",
-    "filter":"[.md]"
+    "filter":""
 }
 '''
 
@@ -31,11 +25,11 @@ def try_config():
         init_config()
     conf = open(CONFIG_PATH, encoding="utf-8")
     config = json.load(conf)
-    POOL_CAPACITY = min(config['processes'], 10)
-    SOURCE_DIR = config['source']
-    DEST_DIR = config['destination']
-    FILTER = config['filter']
+    custom_config = {'processes': min(int(config['processes']), 10), 'source': config['source'],
+                     'destination': config['destination'], 'filter': config['filter'].split(",")}
     conf.close()
+
+    return custom_config
 
 
 def init_config():
@@ -43,16 +37,9 @@ def init_config():
         f.write(default_config)
 
 
-def config():
-    global pool
-    pool = multiprocessing.Pool(processes=POOL_CAPACITY)
-    check_path(SOURCE_DIR)
-    check_path(DEST_DIR)
-
-
 def check_path(path):
-    path = os.path.realpath(path)
-    if path == "":
+    if not path:
+        print("You haven't complete your conf file.")
         sys.exit(1)
     if not os.path.exists(path):
         print("%s does not exist.Check your config file out." % path)
@@ -64,44 +51,42 @@ def check_path(path):
             sys.exit(2)
 
 
-def check_file(file):
-    dest_file = os.path.join(DEST_DIR, file)
-    src_file = os.path.join(SOURCE_DIR, file)
-    dest_context = open(dest_file, encoding="utf-8").readlines()
-    src_context = open(src_file, encoding="utf-8").readlines()
+def check_file(file, src, dest):
+    dest_file = os.path.join(os.path.realpath(dest), file)
+    src_file = os.path.join(os.path.realpath(src), file)
     if os.path.exists(dest_file):
-        diff = difflib.context_diff(dest_context, src_context)
-        try:
-            next(diff)
-        except StopIteration:
-            return False
-    return True
+        print("%s has already existed." % file)
+        return filecmp.cmp(dest_file, src_file)
+    return False
 
 
-def backup(file):
-    src = os.path.join(SOURCE_DIR, file)
-    des = os.path.join(DEST_DIR, file)
-    res = check_file(file)
-    if res:
+def backup(file, config):
+    src = os.path.join(config['source'], file)
+    des = os.path.join(config['destination'], file)
+    print("Handle file: %s" % file)
+    res = check_file(file, config['source'], config['destination'])
+    if not res:
         shutil.copyfile(src, des)
 
 
-def read_fs():
-    all_file = os.listdir(SOURCE_DIR)
+def read_fs(src, _filter):
+    all_file = os.listdir(src)
     files = []
     print("Reading filesystem...")
+    if _filter == ['']:
+        return all_file
     for file in all_file:
-        if os.path.splitext(file)[1] in FILTER:
+        if os.path.splitext(file)[1] in _filter:
             files.append(file)
     return files
 
 
 def main():
-    try_config()
-    config()
-    files = read_fs()
+    config = try_config()
+    files = read_fs(config['source'], config['filter'])
+    pool = multiprocessing.Pool(processes=min(len(files), config['processes']))
     for file in files:
-        pool.apply_async(backup, (file,))
+        pool.apply_async(backup, (file, config,))
     pool.close()
     pool.join()
     print("All done.")
