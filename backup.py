@@ -68,13 +68,14 @@ def check_file(file, src, dest):
     return False
 
 
-def backup(file, config):
+def backup(file, config, result):
     src = os.path.join(config['source'], file)
     des = os.path.join(config['destination'], file)
     print("Handle file: %s" % file)
     res = check_file(file, config['source'], config['destination'])
     if not res:
         shutil.copyfile(src, des)
+        result += 1
 
 
 def read_fs(src, _filter):
@@ -87,9 +88,14 @@ def read_fs(src, _filter):
     if _filter == ['']:
         return all_file
     for file in all_file:
-        if os.path.splitext(file)[1].split(".")[1] in _filter:
+        if file.split(".")[-1] in _filter:
             files.append(file)
     return files
+
+
+def report(result, sum):
+    print("==" * 10)
+    print("Report: %s files in requested folder, %s newly updated." % (sum, result))
 
 
 def main():
@@ -100,11 +106,13 @@ def main():
         print("Empty directory.")
         sys.exit(4)
     pool = multiprocessing.Pool(processes=min(len(files), config['processes']))
+    result = 0
     for file in files:
-        pool.apply_async(backup, (file, config,))
+        pool.apply_async(backup, (file, config, result))
     pool.close()
     pool.join()
     print("All done.")
+    report(result, len(files))
 
 
 if __name__ == '__main__':
