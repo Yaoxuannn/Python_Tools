@@ -12,23 +12,32 @@ default_config = '''{
     "processes":"5",
     "source":"",
     "destination":"",
-    "filter":""
+    "filter":"py:md",
+    "delimiter":":"
 }
 '''
 
 
-# 首先读取配置文件,没有则创建. 初始化进程池, 读取文件夹, 确定存在性, 接着进行文件迁移.
-# 文件迁移时, 先进行diff对比, 如果没有发生改变, 则跳过.
+# Return Code:
+# 1:  Haven't configure the target in the configure file.
+# 2:  Cannot find the destination folder, or you disagree to create it.
+# 3:  Illegal symbols found in the configure file.
+# 4:  None of files found in the source folder.
+
 
 def try_config():
     if not os.path.exists(CONFIG_PATH):
         init_config()
     conf = open(CONFIG_PATH, encoding="utf-8")
-    config = json.load(conf)
-    custom_config = {'processes': min(int(config['processes']), 10), 'source': config['source'],
-                     'destination': config['destination'], 'filter': config['filter'].split(",")}
+    try:
+        config = json.load(conf)
+    except json.decoder.JSONDecodeError:
+        print("Your path specified has illegal symbols.\nTip: you need use '/' but not '\\'.")
+        sys.exit(3)
+    custom_config = {'processes': min(int(config['processes']), 20), 'source': config['source'],
+                     'destination': config['destination'],
+                     'filter': config['filter'].split(config["delimiter"])}
     conf.close()
-
     return custom_config
 
 
@@ -39,13 +48,12 @@ def init_config():
 
 def check_path(path):
     if not path:
-        print("You haven't complete your conf file.")
+        print("Please complete your backup.conf first")
         sys.exit(1)
     if not os.path.exists(path):
         print("%s does not exist.Check your config file out." % path)
         ans = input("Do you want to create %s ?  (Default is y)[ y/n ]" % os.path.basename(path))
-        if ans or ans == "y":
-            # 创建文件夹
+        if not ans or ans == "y":
             os.mkdir(path)
         else:
             sys.exit(2)
@@ -70,20 +78,27 @@ def backup(file, config):
 
 
 def read_fs(src, _filter):
+    if not src:
+        print("Check your backup.conf")
+        sys.exit(1)
     all_file = os.listdir(src)
     files = []
     print("Reading filesystem...")
     if _filter == ['']:
         return all_file
     for file in all_file:
-        if os.path.splitext(file)[1] in _filter:
+        if os.path.splitext(file)[1].split(".")[1] in _filter:
             files.append(file)
     return files
 
 
 def main():
     config = try_config()
+    check_path(config['destination'])
     files = read_fs(config['source'], config['filter'])
+    if not files:
+        print("Empty directory.")
+        sys.exit(4)
     pool = multiprocessing.Pool(processes=min(len(files), config['processes']))
     for file in files:
         pool.apply_async(backup, (file, config,))
