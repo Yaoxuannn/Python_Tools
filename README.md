@@ -26,3 +26,11 @@ Help: python base.py [path1 [path2 [path3...]]][-h/--help][all]
 you can specify the path for each .png or use `-all` to find all .png under the current working directory.
 
 **The last base64 string will be pasted automatically.**
+
+## backup.py
+
+This is a enhanced copy tool written by python, it will generate a configure file. The sample of it has shown in this directory. The biggest feature of it is this tool can compare the file which has the same name and only the newer one will execute the copy operation. And of course, this tool run in the multi-processing mode.
+
+## md5_file.py
+
+Just a simple file using for calculate the md5 checksum. It has optimized a little for these BIG FILE.
