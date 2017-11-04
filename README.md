@@ -33,4 +33,4 @@ This is a enhanced copy tool written by python, it will generate a configure fil
 
 ## md5_file.py
 
-Just a simple file using for calculate the md5 checksum. It has optimized a little for these BIG FILE.
+Just a simple file using for calculate the md5 checksum. It has optimized a little for these BIG FILES.
