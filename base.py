@@ -4,6 +4,8 @@ import base64
 import os
 import sys
 
+MAX_SIZE_THRESH = 5000 # This is the maximum for the input pic
+
 handle_list = []
 
 
@@ -12,7 +14,7 @@ def transfer(path):
     global errC
     try:
         with open(path, 'rb') as f:
-            if getSize(f) > 5000:
+            if getSize(f) > MAX_SIZE_THRESH:
                 print('File:', path)
                 print('[+]ERROR: Too large to transfer.')
                 errC += 1
