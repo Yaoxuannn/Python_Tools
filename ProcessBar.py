@@ -17,7 +17,7 @@ class ProcessBar:
         self._bar = sys.stdout
         try:
             self._column = os.get_terminal_size().columns
-        except OSError:
+        except (OSError, AttributeError):
             self._column = 60
         self._return = "\r"
         self._name = "Task"
@@ -83,26 +83,26 @@ class NotInitException(BaseException):
     pass
 
 
-# 下面是一个测试用例
 a = ProcessBar()
-print("开始测试...初始化")
-print("执行第一阶段..")
+print("Now start test.\nStage one..")
 for n in range(10):
     a.update(5)
     time.sleep(0.3)
 
-print("执行第二阶段..")
+print("Second stage..")
 for n in range(10):
     a.update(4)
     if n == 7:
         a.update(span=0, newline=True)
-        print("出现了不可预知的错误, 第二阶段中断...")
+        print("[!] Error. Stop the stage two")
         break
-print("执行最后阶段...")
-a.init()  # 由于中断, 我们要重新初始化进度条, 否则会从中断的地方继续下去.
+print("The last stage...")
+# We need to reinit the processbar for the break just occurred
+# instead of the bar will continue from the breakpoint.
+a.init()
 for n in range(5):
     a.update(5)
     time.sleep(1)
 a.peek(100)
 time.sleep(0.4)
-a.done("结束")
+a.done("Done")
