@@ -3,7 +3,8 @@ import socket
 import sys
 
 help_info = {
-    "fucking word": "Get the pronunciation and the definition of the `word`",
+    "fucking word": "Get the pronunciation and the definition of the `word`. \n\t\t\t\t\t(double quotation marks are "
+                    "needed if the `word` is a phrase or a sentence)",
     "fucking -f|--force word": "Force to fetch data from the Internet",
     "fucking -u|--update word": "Update the local cache of the `word`(Has the same effect of the -f)",
     "fucking -p|--ping": "Ping the target to check the connection",
