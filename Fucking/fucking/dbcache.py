@@ -69,7 +69,7 @@ def save(info):
     cursor.execute(save_sql, (
         info['word'],
         str(info['symbols']),
-        str(info['means'])  # TODO: 这里, 存储的时候要想办法搞一个可序列化的字符串 才行
+        str(info['means'])
     ))
     conn.commit()
     cursor.close()
