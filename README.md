@@ -80,31 +80,30 @@ Simply, this is a python tool which make English word to Chinese using the baidu
 And it is easy to use:
 
 ```bash
-~ fucking -h
 Usage:
 	 fucking word             	 Get the pronunciation and the definition of the `word`.
-					            (double quotation marks are needed if the `word` is a phrase or a sentence)
+					(double quotation marks are needed if the `word` is a phrase or a sentence)
 	 fucking -f|--force word  	 Force to fetch data from the Internet
 	 fucking -u|--update word 	 Update the local cache of the `word`(Has the same effect of the -f)
 	 fucking -p|--ping        	 Ping the target to check the connection
+	 fucking -v|--version     	 Display the version infomation
 	 fucking -h|--help        	 Print this help information
 ```
 
 One example is :
 
 ```bash
-~ fucking world
-From local cache:	***world***
-美音: [ wɜ:rld ]	英音: [ wɜ:ld ]
+~ fucking shit
+From Internet:   	***shit***
+美音: [ ʃɪt ]	英音: [ ʃɪt ]
 释义:
-	n.    ['世界', '地球', '领域', '尘世']
-~ fucking -f world
-From Internet:   	***world***
-美音: [ wɜ:rld ]	英音: [ wɜ:ld ]
-释义:
-	n.    ['世界', '地球', '领域', '尘世']
-~ fucking -p
-Success!
+	n.    ['屎，粪便', '拉屎，排便', '胡说八道', '不幸或麻烦']
+	vi.   ['大便，拉屎']
+	vt.   ['拉屎弄脏（某物），排便于…', '取笑', '欺骗，哄骗', '对…胡扯']
+	int.   ['胡扯！放屁！讨厌！[用以表示厌恶、轻蔑、失望、愤怒等]']
+~ fucking -v
+fucking: 1.0.4 Written by Justin13
+Bug report: justin13wyx@gmail.com
 ```
 
 > How to install ?
