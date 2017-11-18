@@ -7,6 +7,11 @@ from Fucking.fuck import dbcache
 from Fucking.fuck import fucking_cmd
 
 url = "http://fanyi.baidu.com/v2transapi"
+ver = sys.version.split(" ")[0].split(".")[1]
+if int(ver) >= 5:
+    exception = json.decoder.JSONDecodeError
+else:
+    exception = ValueError
 
 header = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 \
@@ -72,9 +77,10 @@ def parse_data(word, data):
     if not json_dict['dict_result']:
         return False
     key = json_dict['dict_result']['simple_means']['symbols']
+    hassymbol = 'ph_am' in key[0]
     result = {
         "word": word,
-        "symbols": str({'美音': key[0]['ph_am'], "英音": key[0]['ph_en']}),
+        "symbols": str({'美音': key[0]['ph_am'], "英音": key[0]['ph_en']}) if hassymbol else "False",
         "means": str(key[0]['parts']),
         "local": False
     }
@@ -85,21 +91,31 @@ def parse_data(word, data):
 
 def output(result):
     if not result:
-        print("Your sure your spell is right?")
+        print("You sure your spell is right?")
         exit(-5)
     if result['local']:
         print("From local cache:\t***%s***" % result['word'])
     else:
         print("From Internet:   \t***%s***" % result['word'])
-    symbols = json.loads(result['symbols'].replace("'", "\""))
-    for k, v in symbols.items():
-        if v:
-            sys.stdout.write("%s: [ %s ]\t" % (k, v))
+    try:
+        symbols = json.loads(result['symbols'].replace("'", "\""))
+        for k, v in symbols.items():
+            if v:
+                sys.stdout.write("%s: [ %s ]\t" % (k, v))
+    except exception:
+        sys.stdout.write("音标中含有非法字符!")
     print("")
     means = "{\"means\": %s}" % result['means'].replace("\'", "\"")
     print("释义:")
-    for mean in json.loads(means)['means']:
-        print("\t{0:3}   {1}".format(mean['part'], mean['means']))
+    try:
+        means = json.loads(means)['means']
+        for mean in means:
+            if 'part' in mean:
+                print("\t{0:3}   {1}".format(mean['part'], mean['means']))
+            elif 'part_name' in mean:
+                print("\t来源于网络的结果:   {0}".format(mean['means']))
+    except exception:
+        print(means)
 
 def main():
     dbcache.init()
