@@ -107,4 +107,9 @@ From Internet:   	***world***
 Success!
 ```
 
+> How to install ?
+> ```
+pip install fucking
+>```
+
 Enjoy fucking !
