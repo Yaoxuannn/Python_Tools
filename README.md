@@ -109,7 +109,7 @@ Success!
 
 > How to install ?
 > ```
-pip install fucking
->```
+> pip install fucking
+> ```
 
 Enjoy fucking !
