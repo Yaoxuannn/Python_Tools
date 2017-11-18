@@ -3,8 +3,8 @@ import json
 import sys
 
 import requests
-from fucking import dbcache
-from fucking import fucking_cmd
+from Fucking.fuck import dbcache
+from Fucking.fuck import fucking_cmd
 
 url = "http://fanyi.baidu.com/v2transapi"
 
@@ -101,8 +101,10 @@ def output(result):
     for mean in json.loads(means)['means']:
         print("\t{0:3}   {1}".format(mean['part'], mean['means']))
 
-
-if __name__ == "__main__":
+def main():
     dbcache.init()
     result = fetch(fucking_cmd.parse_cmd())
     output(result)
+
+if __name__ == "__main__":
+    main()
