@@ -111,4 +111,11 @@ Bug report: justin13wyx@gmail.com
 > pip3 install fucking
 > ```
 
+changelog:
+
+> v1.0.5: Fix bugs when in Python3.X(X <= 4) module json has different type of exception.
+
+> v1.0.6: Add new param `-s|--size` to get the current size of the database.
+
+
 Enjoy fucking !
