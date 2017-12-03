@@ -119,3 +119,7 @@ changelog:
 
 
 Enjoy fucking !
+
+## ascii.py
+
+Help you quickly get the ascii code of the character.
