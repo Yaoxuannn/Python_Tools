@@ -52,6 +52,7 @@ for n in range(10):
 
 print("Second stage..")
 for n in range(10):
+    time.sleep(0.4)
     a.update(4)
     if n == 7:
         a.update(span=0, newline=True)
@@ -63,13 +64,13 @@ for n in range(5):
     a.update(5)
     time.sleep(1)
 a.peek(100)
-time.sleep(0.4)
+time.sleep(0.3)
 a.done("Done")
 ```
 
 And the effect is like:
 
-![processbar](http://omps875vw.bkt.clouddn.com/processbar.gif)
+![ProcessBar](http://omps875vw.bkt.clouddn.com/ProcessBar.gif)
 
 ## Fucking
 
