@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 # coding: utf-8
 import filecmp
 import json
@@ -68,14 +69,13 @@ def check_file(file, src, dest):
     return False
 
 
-def backup(file, config, result):
+def backup(file, config):
     src = os.path.join(config['source'], file)
     des = os.path.join(config['destination'], file)
-    print("Handle file: %s" % file)
     res = check_file(file, config['source'], config['destination'])
     if not res:
         shutil.copyfile(src, des)
-        result += 1
+        return file
 
 
 def read_fs(src, _filter):
@@ -93,10 +93,13 @@ def read_fs(src, _filter):
     return files
 
 
-def report(result, sum):
+def report(sum, rep):
     print("==" * 10)
-    print("Report: %s files in requested folder, %s newly updated." % (sum, result))
-
+    print("Report: %s files in requested folder." % sum)
+    for file in rep:
+        name = file.get()
+        if name:
+            print(name, "modified.")
 
 def main():
     config = try_config()
@@ -106,13 +109,13 @@ def main():
         print("Empty directory.")
         sys.exit(4)
     pool = multiprocessing.Pool(processes=min(len(files), config['processes']))
-    result = 0
+    rep = []
     for file in files:
-        pool.apply_async(backup, (file, config, result))
+        rep.append(pool.apply_async(backup, (file, config)))
     pool.close()
     pool.join()
     print("All done.")
-    report(result, len(files))
+    report(len(files), rep)
 
 
 if __name__ == '__main__':
