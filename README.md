@@ -121,6 +121,6 @@ changelog:
 
 Enjoy fucking !
 
-## ascii.py
+## unicode.py
 
-Help you quickly get the ascii code of the character.
+Help you quickly get the unicode of the character.
