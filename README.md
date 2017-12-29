@@ -121,6 +121,8 @@ changelog:
 
 Enjoy fucking !
 
+> UPDATE: Since the response of Baidu_translate has changed. Fucking is useless now.  : )
+
 ## unicode.py
 
 Help you quickly get the unicode of the character.
