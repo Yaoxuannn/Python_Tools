@@ -83,27 +83,28 @@ class NotInitException(BaseException):
     pass
 
 
-a = ProcessBar()
-print("Now start test.\nStage one..")
-for n in range(10):
-    a.update(5)
-    time.sleep(0.3)
+if __name__ == '__main__':
+    a = ProcessBar()
+    print("Now start test.\nStage one..")
+    for n in range(10):
+        a.update(5)
+        time.sleep(0.3)
 
-print("Second stage..")
-for n in range(10):
-    time.sleep(0.4)
-    a.update(4)
-    if n == 7:
-        a.update(span=0, newline=True)
-        print("[!] Error. Stop the stage two")
-        break
-print("The last stage...")
-# We need to reinit the processbar for the break just occurred
-# instead of the bar will continue from the breakpoint.
-a.init()
-for n in range(5):
-    a.update(5)
-    time.sleep(1)
-a.peek(100)
-time.sleep(0.3)
-a.done("Done")
+    print("Second stage..")
+    for n in range(10):
+        time.sleep(0.4)
+        a.update(4)
+        if n == 7:
+            a.update(span=0, newline=True)
+            print("[!] Error. Stop the stage two")
+            break
+    print("The last stage...")
+    # We need to reinit the processbar for the break just occurred
+    # instead of the bar will continue from the breakpoint.
+    a.init()
+    for n in range(5):
+        a.update(5)
+        time.sleep(1)
+    a.peek(100)
+    time.sleep(0.3)
+    a.done("Done")
