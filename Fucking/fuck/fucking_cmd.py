@@ -1,6 +1,7 @@
 import getopt
 import socket
 import sys
+
 from .dbcache import get_size
 
 help_info = {
@@ -17,6 +18,7 @@ force = 0
 update = 0
 
 VERSION = 'fucking: 1.0.6 Written by Justin13\nBug report: justin13wyx@gmail.com'
+
 
 def get_cmd():
     return {
@@ -42,8 +44,10 @@ def ping():
     finally:
         soc.close()
 
+
 def version():
     print(VERSION)
+
 
 def parse_cmd():
     global force
@@ -69,7 +73,7 @@ def parse_cmd():
             update = 1
         elif val in ["-s", "--size"]:
             db_size = get_size()
-            print(db_size[0],db_size[1])
+            print(db_size[0], db_size[1])
             exit(0)
         elif val in ["-h", "--help"]:
             usage()

@@ -126,3 +126,44 @@ Enjoy fucking !
 ## unicode.py
 
 Help you quickly get the unicode of the character.
+
+## kg-downloader
+
+This is a sexy tool that help you download songs from kg.qq.com(`全民K歌` in Chinese).
+
+It is easy to use:
+
+```
+➜ ~ kg_downloader -h
+Usage:
+         kg_downloader [-l|--location] url       Let kg_downloader analyse the given url and download songs.
+         kg_downloader -l|--location             Specify the download path.[default: HOME]
+         kg_downloader -v|--version              Display version information.
+         kg_downloader -h|--help                 Print this help information.
+```
+
+There're two different types of urls, one is the song playing page, the other is the songer page. If you give the song playing page's url. Kg_downloader will download the playing song on the page as you wish. However if you give the singer page's url, The **whole** songs that this singer published will be downloaded.
+
+Of course you can choose where to put this downloaded items, just use the `-l|--location`.
+
+Here is a sample:
+
+```
+➜  /tmp kg_downloader -l /tmp "http://node.kg.qq.com/personal?uid=609c9a842c2d358d35&g_f=personal"
+[+] Fetch songs list success!
+[+] Construct metadata successful!
+[+] Download all songs to /tmp...
+[+] Downloading 情非得已
+[+] Writing data (0.13M/3M)
+...
+```
+
+> How to install?
+>
+> ```
+> pip install kg-downloader
+> ```
+
+Hope you like it. I will make it to be more stable.
+
+Still, i need to give you a notice, it only work with **Python3**.

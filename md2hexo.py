@@ -1,11 +1,11 @@
 # coding: utf-8
 
-import os
-import sys
-import time
-import shutil
 import datetime
+import os
+import shutil
+import sys
 import threading
+import time
 from configparser import ConfigParser
 
 handle_list = []
