@@ -170,4 +170,4 @@ Still, i need to give you a notice, it only work with **Python3**.
 
 changelog:
 
-> v1.0.3: Fix bugs when pass a not standard url will cause analyse fail. Add report.
+> v0.1.3: Fix bugs when pass a not standard url will cause analyse fail. Add report.
