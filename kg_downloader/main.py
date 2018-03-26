@@ -1,5 +1,5 @@
-import kg_downloader.api as api
-import kg_downloader.kg_cmder as kg_cmder
+import api
+import kg_cmder
 
 
 def main():
@@ -14,7 +14,8 @@ def main():
         print("[+] Construct metadata successful!")
         print("[+] Download all songs to %s..." % loc)
         for key, val in result_set.items():
-            result.append(api.download_song(key, val, loc))
+            result.append(api.download_song(key, val, loc, 1024))
+        print("[+] Report:\n%s" % result)
     else:
         # 未知领域哈哈哈
         exit(-2)

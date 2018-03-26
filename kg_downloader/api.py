@@ -1,7 +1,7 @@
 import json
 import multiprocessing
 import re
-from os import path, remove
+from os import path, remove, mkdir
 from time import time
 
 import requests
@@ -37,8 +37,8 @@ header = {
 
 
 def analyse(url):
-    user_pattern = r"http://node.kg.qq.com/(?P<flag>\w+)\?uid=(?P<uid>\w+)\&.*"
-    song_pattern = r"http://node.kg.qq.com/(?P<flag>\w+)\?s=(?P<sid>\w+)\&.*"
+    user_pattern = r"http://node.kg.qq.com/(?P<flag>\w+)\?uid=(?P<uid>\w+)\&?.*"
+    song_pattern = r"http://node.kg.qq.com/(?P<flag>\w+)\?s=(?P<sid>\w+)\&?.*"
     result = re.match(user_pattern, url, re.X)
     # TODO: 这个地方的实现实在是太丑陋了, 暂时放一下, 日后再想.
     if not result:
@@ -66,17 +66,19 @@ def fetch_song_list(start, url, uid, result_set):
     return result_set
 
 
-def download_song(key, real_url, location):
+def download_song(key, real_url, location, chunk):
     print("[+] Downloading %s" % key)
     try:
         res = requests.get(real_url, stream=True)
-        size = int(int(res.headers['content-length']) / 1024 / 1024)  # 这是左移几位啊...懒得算了
+        size = float(res.headers['content-length']) / 1024 / 1024  # 这是左移几位啊...懒得算了
     except requests.ConnectionError:
         print("[-] Network error")
         return False
     ext = "m4a"
-    st_path = path.join(location, ".".join([key, ext]))
-    chunk = 1024
+    folder = path.join(location, "kg_downloader")
+    if not path.exists(folder):
+        mkdir(folder)
+    st_path = path.join(folder, ".".join([key, ext]))
     written_size = 0
     if path.exists(st_path):
         print("%s already exists." % st_path)
@@ -86,15 +88,15 @@ def download_song(key, real_url, location):
         for data in res.iter_content(chunk_size=chunk):
             written_size += len(data) / 1024 / 1024
             f.write(data)
-            print("[+] Writing data: (%.2fM/%dM)    " % (written_size, size), end="\r")
+            print("[+] Writing data: (%.2fM/%.2fM)  " % (written_size, size), end="\r")
         f.close()
-        print("[+] Writing data: all done! :)       ")
-        return True
+        print("[+] Writing data:  done! :)       ")
+        return key
     except (requests.ConnectTimeout, KeyboardInterrupt):
         print("[-] error.")
         exit(-1)
     finally:
-        remove(st_path)
+        # remove(st_path)
         f.close()
 
 
@@ -117,6 +119,7 @@ def fetch_data(url, info):
         result_set = {}
         result_set = fetch_song_list(1, RURL, info['uid'], result_set)
         print("[+] Fetch songs list success!!")
+        print("[+] Waiting for metadata constructed...(may take a while)")
         for song, sid in result_set.items():
             result_set.update(
                 get_real_pair(song, concat_song_url(sid))

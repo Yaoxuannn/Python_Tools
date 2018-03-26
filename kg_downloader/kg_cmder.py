@@ -3,7 +3,7 @@ import sys
 from os import getenv
 
 
-VERSION = 'kg_downloader: 0.1.0 Written by Justin13\nBug report: justin13wyx@gmail.com'
+VERSION = 'kg_downloader: 0.1.3 Written by Justin13\nBug report: justin13wyx@gmail.com'
 
 help_info = {
     "kg_downloader [-l|--location] url": "Let kg_downloader analyse the given url and download songs.",
@@ -27,7 +27,7 @@ def version():
 def parse_cmd():
     location = getenv("HOME")
     try:
-        opts, args = getopt(sys.argv[1:], "vhl", ["version", "help", "location"])
+        opts, args = getopt(sys.argv[1:], "vhls", ["version", "help", "location", "speed"])
     except GetoptError:
         print("Bad parameter.\n")
         usage()

@@ -167,3 +167,7 @@ Here is a sample:
 Hope you like it. I will make it to be more stable.
 
 Still, i need to give you a notice, it only work with **Python3**.
+
+changelog:
+
+> v1.0.3: Fix bugs when pass a not standard url will cause analyse fail. Add report.
