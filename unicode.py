@@ -21,7 +21,7 @@ if __name__ == "__main__":
             reverse = 1
 
     try:
-        ques = argv[0]
+        ques = argv[0][0]
         try:
             int(ques)
         except ValueError:
