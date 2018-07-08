@@ -1,5 +1,4 @@
 import json
-import multiprocessing
 import re
 from os import path, remove, mkdir
 from time import time
@@ -9,7 +8,6 @@ from lxml import etree
 
 URL = "http://node.kg.qq.com/{}?{}={}"
 RURL = "http://node.kg.qq.com/cgi/fcgi-bin/kg_ugc_get_homepage"
-pool = multiprocessing.Pool(4)
 session = requests.Session()
 
 # 最后的一个参数是时间戳(毫秒级)
@@ -71,6 +69,9 @@ def fetch_song_list(start, url, uid, result_set):
         fetch_song_list(start, url, uid, result_set)
     return result_set
 
+
+def download(key, real_url, location, chunk):
+    pass
 
 ##
 # 通用下载函数
