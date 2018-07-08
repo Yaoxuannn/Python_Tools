@@ -35,7 +35,9 @@ header = {
     "X-Requested-With": "XMLHttpRequest"
 }
 
-
+##
+# 正则过滤用户的URL
+##
 def analyse(url):
     user_pattern = r"http://node.kg.qq.com/(?P<flag>\w+)\?uid=(?P<uid>\w+)\&?.*"
     song_pattern = r"http://node.kg.qq.com/(?P<flag>\w+)\?s=(?P<sid>\w+)\&?.*"
@@ -48,7 +50,11 @@ def analyse(url):
     print("Analyse error.")
     return None
 
-
+##
+# 补全之前的请求头部,
+# 获取歌手的歌曲列表,
+# 返回包含所有歌曲名和歌曲链接的字典
+##
 def fetch_song_list(start, url, uid, result_set):
     header.update({"Referer": url})
     query.update({
@@ -66,6 +72,9 @@ def fetch_song_list(start, url, uid, result_set):
     return result_set
 
 
+##
+# 通用下载函数
+##
 def download_song(key, real_url, location, chunk):
     print("[+] Downloading %s" % key)
     try:
@@ -96,15 +105,18 @@ def download_song(key, real_url, location, chunk):
         print("[-] error.")
         exit(-1)
     finally:
-        # remove(st_path)
         f.close()
 
 
+##
+# 来自全民K歌的Bug
+# 有的歌曲名字存在数据不一致
+##
 def get_real_pair(song, url):
     res = session.get(url)
     html = etree.HTML(res.text)
     raw_data = html.xpath("/html/body/script[1]/text()")[0]
-    title = song if song else html.xpath("/html/head/title/text()")[0].split("-")[0]
+    title = song if song else html.xpath("/html/head/title/text()")[0].split("-")[1]
     real_url = json.loads(raw_data[raw_data.index("{"):-2])['detail']['playurl']
     return {title: real_url}
 
@@ -112,7 +124,9 @@ def get_real_pair(song, url):
 def concat_song_url(sid):
     return URL.format("play", "s", sid)
 
-
+##
+# 歌手歌曲列表的构造前导函数
+##
 def fetch_data(url, info):
     if info['flag'] == "personal":
         # TODO: 思考更好的方式, 肯定有办法, 这样太丑了
