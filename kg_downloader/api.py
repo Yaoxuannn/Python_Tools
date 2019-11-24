@@ -1,6 +1,7 @@
 import json
 import re
-from os import path, remove, mkdir
+import pickle
+from os import path, remove, mkdir, getenv
 from time import time
 
 import requests
@@ -37,8 +38,8 @@ header = {
 # 正则过滤用户的URL
 ##
 def analyse(url):
-    user_pattern = r"http://node.kg.qq.com/(?P<flag>\w+)\?uid=(?P<uid>\w+)\&?.*"
-    song_pattern = r"http://node.kg.qq.com/(?P<flag>\w+)\?s=(?P<sid>\w+)\&?.*"
+    user_pattern = r"https?://node.kg.qq.com/(?P<flag>\w+)\?uid=(?P<uid>\w+)\&?.*"
+    song_pattern = r"https?://node.kg.qq.com/(?P<flag>\w+)\?s=(?P<sid>\w+)\&?.*"
     result = re.match(user_pattern, url, re.X)
     # TODO: 这个地方的实现实在是太丑陋了, 暂时放一下, 日后再想.
     if not result:
@@ -142,3 +143,27 @@ def fetch_data(url, info):
         return result_set
     else:
         return get_real_pair("", url)
+
+##
+# 请求用户确认
+##
+def confirm(loc, result):
+    print("[+] Following songs will be downloaded to %s:" % loc)
+    names = list(result.keys())
+    for name in names:
+        print(name)
+    while True:
+        cmd = input("Download them all? [Y/n]")
+        if cmd in ['Y', 'Yes', 'y', 'yes']:
+            return True
+        elif cmd in ['N', 'No', 'n', 'no']:
+            return False
+
+
+##
+# 从yum那里学的备份
+# 直接使用pickle模块进行load
+##
+def save_session(result):
+    path = getenv('home')
+    pickle.dumps(result, path)
