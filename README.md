@@ -103,7 +103,7 @@ From Internet:   	***shit***
 	vt.   ['拉屎弄脏（某物），排便于…', '取笑', '欺骗，哄骗', '对…胡扯']
 	int.   ['胡扯！放屁！讨厌！[用以表示厌恶、轻蔑、失望、愤怒等]']
 ~ fucking -v
-fucking: 1.0.4 Written by Justin13
+fucking: 2.1.0 Written by Yaoxuannn
 Bug report: justin13wyx@gmail.com
 ```
 
@@ -121,7 +121,9 @@ changelog:
 
 Enjoy fucking !
 
-> UPDATE: Since the response of Baidu_translate has changed. Fucking is useless now.  : )
+> ~~UPDATE: Since the response of Baidu_translate has changed. Fucking is useless now.  : )~~
+
+> Fucking is updated! The new 2.1 version will give you excellent fucking experience!
 
 ## unicode.py
 
@@ -161,7 +163,7 @@ Here is a sample:
 > How to install?
 >
 > ```
-> pip install kg-downloader
+> pip3 install kg-downloader
 > ```
 
 Hope you like it. I will make it to be more stable.

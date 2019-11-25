@@ -1,7 +1,9 @@
 #! /usr/bin/env python3
+# coding: utf-8
 import json
 import re
 import sys
+import os
 
 import requests
 import execjs
@@ -94,7 +96,7 @@ def _fetch_data(keyword):
 
 
 def get_sign(word, gtk):
-    with open("fuck/cal_sign.js") as f:
+    with open(path.join(path.dirname(__file__), "fuck", "cal_sign.js")) as f:
         data = f.read()
         sign = execjs.compile(data).call("e", word, gtk)
         return sign

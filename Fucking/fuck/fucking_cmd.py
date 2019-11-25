@@ -1,3 +1,4 @@
+# coding: utf-8
 import getopt
 import socket
 import sys
