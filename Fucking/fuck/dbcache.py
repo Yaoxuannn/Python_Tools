@@ -11,6 +11,7 @@ if not USER_HOME:
 
 DB_PATH = os.path.join(USER_HOME, "fucking.db")
 
+
 def get_size():
     scale = ["b", "Kb", "Mb", "Gb"]
     size = os.stat(DB_PATH).st_size
@@ -19,6 +20,7 @@ def get_size():
         size = size / 1024
         level += 1
     return (size, scale[level])
+
 
 def connect():
     try:
@@ -33,6 +35,11 @@ def init():
     if not os.path.exists(DB_PATH):
         print("First run. Initing database...")
         conn = connect()
+        conn.execute(
+            'CREATE TABLE IF NOT EXISTS system (version varchar(20) default "1.0.0", \
+                token varchar(255), \
+                cookie varchar(255))'
+        )
         for n in range(4):
             conn.execute(
                 'CREATE TABLE IF NOT EXISTS diction_{0} (id integer primary key autoincrement not null, \
@@ -68,6 +75,17 @@ def lookup(word):
         return select(_id[0], part)
     else:
         return False
+
+
+def get(keyword):
+    get_sql = 'SELECT {} FROM system'.format(keyword)
+    conn = connect()
+    cursor = conn.cursor()
+    cursor.execute(get_sql)
+    info = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return info
 
 
 def save(info):

@@ -1,12 +1,14 @@
 #! /usr/bin/env python3
 import json
+import re
 import sys
 
 import requests
+import execjs
 from Fucking.fuck import dbcache
 from Fucking.fuck import fucking_cmd
 
-url = "http://fanyi.baidu.com/v2transapi"
+url = "https://fanyi.baidu.com/v2transapi?from=en&to=zh"
 ver = sys.version.split(" ")[0].split(".")[1]
 if int(ver) >= 5:
     exception = json.decoder.JSONDecodeError
@@ -14,20 +16,29 @@ else:
     exception = ValueError
 
 header = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 \
-     (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36",
-    "Referer": "http://fanyi.baidu.com/",
-    "Origin": "http://fanyi.baidu.com",
-    "X-Requested-With": "XMLHttpRequest"
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) "
+                  "Chrome/78.0.3904.108 Safari/537.36",
+    "Referer": "https://fanyi.baidu.com/",
+    "Origin": "https://fanyi.baidu.com",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    "X-Requested-With": "XMLHttpRequest",
+    "Content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+    "dnt": "1"
 }
 
 formdata = {
     "from": "en",
     "to": "zh",
     "query": "",
-    "transtype": "translang",
-    "simple_means_flag": "3"
+    "transtype": "realtime",
+    "simple_means_flag": "3",
+    "sign": "",
+    "token": ""
 }
+
+
+session = requests.session()
 
 
 def _fetch_local(keyword):
@@ -65,11 +76,28 @@ def fetch(keyword):
 def _fetch_data(keyword):
     formdata['query'] = keyword
     try:
-        res = requests.post(url, data=formdata, headers=header)
+        s = requests.Session()
+        s.get("https://fanyi.baidu.com/")
+        r = s.get("https://fanyi.baidu.com/")
+        # Get token
+        gtk = re.findall(r"window.gtk = '(.*?)';", r.text)[0]
+        sign = get_sign(keyword, gtk)
+        formdata['sign'] = sign
+        formdata.update({
+            "token": re.findall(r"token: '(.*?)',", r.text)[0],
+        })
+        res = s.post(url, data=formdata, headers=header)
     except ConnectionError:
         print("Connection error.")
         return False
     return res.text
+
+
+def get_sign(word, gtk):
+    with open("fuck/cal_sign.js") as f:
+        data = f.read()
+        sign = execjs.compile(data).call("e", word, gtk)
+        return sign
 
 
 def parse_data(word, data):
@@ -117,10 +145,12 @@ def output(result):
     except exception:
         print(means)
 
+
 def main():
     dbcache.init()
     result = fetch(fucking_cmd.parse_cmd())
     output(result)
+
 
 if __name__ == "__main__":
     main()
